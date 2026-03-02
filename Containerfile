@@ -43,7 +43,7 @@ RUN dnf -y config-manager --add-repo \
 
 RUN TARGET_KVER=$(dnf repoquery --requires --recursive --resolve nvidia-open | \
     grep kernel-devel | \
-    sed 's/.*matched-//; s/[0-9]://' | \
+    sed -E 's/^(kernel-devel-|matched-|[0-9]+:)//g' | \
     sort -V | tail -n 1) && \
     echo "Cleaned Target Kernel: $TARGET_KVER" && \
     dnf install -y \
