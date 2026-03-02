@@ -41,8 +41,10 @@ RUN /usr/bin/crb enable
 RUN dnf -y config-manager --add-repo \
     https://developer.download.nvidia.com/compute/cuda/repos/rhel10/x86_64/cuda-rhel10.repo
 
-RUN dnf clean all && \
-    dnf -y install nvidia-open
+RUN KERNEL_VERSION=$(rpm -q --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}\n' kernel-core | head -n 1) && \
+    dnf -y install kernel-devel-$KERNEL_VERSION kernel-headers-$KERNEL_VERSION && \
+    dnf -y install nvidia-open && \
+    dnf clean all
 
 RUN dnf -y in virt-manager \
     libvirt-daemon-kvm \
