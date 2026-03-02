@@ -62,11 +62,20 @@ RUN TARGET_KVER=$(rpm -q --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}\n' kernel-
     echo "Searching for modules in /usr/lib/modules/${TARGET_KVER}..." && \
     find /usr/lib/modules/${TARGET_KVER} -name "nvidia.ko*" || (echo "STILL MISSING!" && exit 1)
 
-RUN echo "blacklist nouveau" > /etc/modprobe.d/blacklist-nouveau.conf && \
-    echo "options nouveau modeset=0" >> /etc/modprobe.d/blacklist-nouveau.conf
-
 RUN dnf -y in virt-manager \
     libvirt-daemon-kvm \
     distrobox
 
 RUN systemctl enable libvirtd
+
+RUN echo "install nouveau /usr/bin/false" > /etc/modprobe.d/nouveau-disable.conf && \
+    echo "blacklist nouveau" >> /etc/modprobe.d/nouveau-disable.conf && \
+    echo "options nouveau modeset=0" >> /etc/modprobe.d/nouveau-disable.conf
+
+RUN mkdir -p /usr/lib/bootc/kargs.d && \
+    echo "modprobe.blacklist=nouveau nouveau.modeset=0 rd.driver.blacklist=nouveau" \
+    > /usr/lib/bootc/kargs.d/nvidia.conf
+
+RUN TARGET_KVER=$(rpm -q --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}\n' kernel-core | head -n 1) && \
+    dracut -f --omit "nouveau" --add-config "modprobe.d" \
+    /boot/initramfs-${TARGET_KVER}.img ${TARGET_KVER}
