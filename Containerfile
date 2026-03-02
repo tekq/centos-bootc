@@ -56,7 +56,7 @@ RUN TARGET_KVER=$(dnf repoquery --requires --recursive --resolve nvidia-open | \
     find /usr/lib/modules -mindepth 1 -maxdepth 1 -type d ! -name "${TARGET_KVER}" -exec rm -rf {} + && \
     dnf install -y nvidia-open && \
     NVIDIA_VER=$(rpm -q --queryformat '%{VERSION}' kmod-nvidia-open-dkms) && \
-    dkms install -m nvidia-open -v ${NVIDIA_VER} -k ${TARGET_KVER} && \
+    dkms install -m nvidia -v ${NVIDIA_VER} -k ${TARGET_KVER} && \
     dnf clean all
 
 RUN TARGET_KVER=$(rpm -q --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}\n' kernel-core | head -n 1) && \
