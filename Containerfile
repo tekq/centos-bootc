@@ -41,9 +41,7 @@ RUN /usr/bin/crb enable
 RUN dnf -y config-manager --add-repo \
     https://developer.download.nvidia.com/compute/cuda/repos/rhel10/x86_64/cuda-rhel10.repo
 
-RUN rm -f /var/lib/rpm/__db* && \
-    rpm --rebuilddb && \
-    dnf clean all && \
+RUN dnf clean all && \
     dnf -y install nvidia-open
 
 RUN dnf -y in virt-manager \
