@@ -43,6 +43,7 @@ RUN dnf -y config-manager --add-repo \
 
 RUN KVER=$(rpm -q --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}\n' kernel-core | head -n 1) && \
     echo "Targeting Kernel: $KVER" && \
+    rpm -qva | grep kernel && \
     dnf -y install \
         kernel-devel-$KVER \
         kernel-headers-$KVER && \
